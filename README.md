@@ -33,4 +33,4 @@ cd frontend
 ## Contributors
 
 -   [Marc Ebersberger](https://github.com/BlueMonkeyQ)
--   [Andrue Desmarius](https://github.com/AndrueGage)
+-   [Andrue Desmarais](https://github.com/AndrueGage)
