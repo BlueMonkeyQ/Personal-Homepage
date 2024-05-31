@@ -7,7 +7,4 @@ from .config import url, key
 
 _url = url
 _key = key
-
-def create_supabase_client():
-    supabase: Client = create_client(_url, _key)
-    return supabase
+supabase: Client = create_client(_url, _key)

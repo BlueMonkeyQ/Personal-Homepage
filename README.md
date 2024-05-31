@@ -11,15 +11,19 @@ Table of Contents
 ## Running
 
 ### Flask Locally
-cd backend
-> flask run --host=0.0.0.0 --port=4000
+Working Directory needs to be `backend`
+
+> flask --app run --debug run --host=0.0.0.0 --port=4000
 
 ### Next.js Locally
-cd frontend
+Working Directory needs to be `frontend`
+
 > npm run dev
 
 ## Docker
 [Docker](https://www.docker.com/) must be installed in order to build the images
+
+Working Directory needs to be `Personal-Homepage`
 
 *Build*
 > docker compose build

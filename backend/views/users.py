@@ -1,15 +1,64 @@
-from flask import Flask, jsonify, make_response, request
-from .supabase import create_supabase_client
-from .models import User
+from flask import Flask, jsonify, make_response, request, Blueprint
+from ..database import supabase
 
-app = Flask(__name__)
-supabase = create_supabase_client()
+users = Blueprint('users', __name__, url_prefix='/users')
 
-@app.route("/api/test", methods=["GET"])
-def test():
-    return jsonify({"message": "Server is Running"})
+# ---------- GET ----------
 
-@app.route("/api/flask/users", methods=["POST"])
+# Gets all users
+@users.route("/api/flask", methods=["GET"])
+def get_users():
+    try:
+        users = supabase.from_("users")\
+        .select("id, username, firstname, lastname")\
+        .order(column="id", desc=False)\
+        .execute().data
+
+        return jsonify(users), 200
+
+    except Exception as e:
+        return make_response(jsonify({"message": "Unable to GET user","error": str(e)}), 500)
+
+# Gets user via id
+@users.route("/api/flask/<id>", methods=["GET"])
+def get_user(id):
+    try:
+        user = supabase.from_("users")\
+        .select("*")\
+        .eq(column="id", value=id)\
+        .limit(size=1)\
+        .execute().data[0]
+
+        if user:
+            return make_response(jsonify(user), 200)
+
+        return make_response(jsonify({"message": "User not found"}), 400)
+
+    except Exception as e:
+        return make_response(jsonify({"message": "Unable to GET user","error": str(e)}), 500)
+    
+# Gets user via username and password
+@users.route("/api/flask/credentials", methods=["GET"])
+def get_user_credentials():
+    try:
+        data = request.get_json()
+        user = supabase.from_("users")\
+        .select("id")\
+        .eq(column="username", value=data['username'].lower())\
+        .eq(column="password", value=data['password'])\
+        .limit(size=1)\
+        .execute().data[0]
+        
+        if user:
+            return make_response(jsonify(user), 200)
+
+        return make_response(jsonify({"message": "User not found"}), 400)
+
+    except Exception as e:
+        return make_response(jsonify({"message": "Unable to GET user","error": str(e)}), 500)    
+
+# ---------- POST ----------
+@users.route("/api/flask", methods=["POST"])
 def create_user():
     try:
         data = request.get_json()
@@ -19,7 +68,6 @@ def create_user():
             "password": data['password'],
             "firstname": data['firstname'],
             "lastname": data['lastname'],
-            "birthday": data['birthday']
         })\
         .execute()
 
@@ -34,43 +82,13 @@ def create_user():
             'username': data['username'],
             'firstname': data['firstname'],
             'lastname': data['lastname'],
-            'birthday': data['birthday'],
         }, 201)
     
     except Exception as e:
         return make_response(jsonify({'message': 'Unable to POST user', 'error': str(e)}), 500)
 
-@app.route("/api/flask/users", methods=["GET"])
-def get_users():
-    try:
-        users = supabase.from_("users")\
-        .select("id, username, firstname, lastname, birthday")\
-        .order(column="id", desc=False)\
-        .execute().data
-
-        return jsonify(users), 200
-
-    except Exception as e:
-        return make_response(jsonify({"message": "Unable to GET user","error": str(e)}), 500)
-
-@app.route("/api/flask/users/<id>", methods=["GET"])
-def get_user(id):
-    try:
-        user = supabase.from_("users")\
-        .select("*")\
-        .eq(column="id", value=id)\
-        .limit(size=1)\
-        .execute().data[0]
-
-        if user:
-            return make_response(jsonify({"user": user.json()}), 200)
-
-        return make_response(jsonify({"message": "User not found"}), 400)
-
-    except Exception as e:
-        return make_response(jsonify({"message": "Unable to GET user","error": str(e)}), 500)
-    
-@app.route("/api/flask/users/<id>", methods=["PUT"])
+# ---------- PUT ----------
+@users.route("/api/flask/<id>", methods=["PUT"])
 def update_user(id):
     try:
         user = supabase.from_("users")\
@@ -86,8 +104,7 @@ def update_user(id):
                 "username": data['username'].lower(),
                 'password': data['password'],
                 'firstname': data['firstname'],
-                'lastname': data['lastname'],
-                'birthday': data['birthday'],
+                'lastname': data['lastname']
             })\
             .eq(column='id', value=id)\
             .execute()
@@ -100,7 +117,8 @@ def update_user(id):
     except Exception as e:
         return make_response(jsonify({"message": "Unable to UPDATE user","error": str(e)}), 500)
     
-@app.route("/api/flask/users/<id>", methods=["DELETE"])
+# ---------- DELETE ----------
+@users.route("/api/flask/<id>", methods=["DELETE"])
 def delete_user(id):
     try:
         user = supabase.from_("users")\
