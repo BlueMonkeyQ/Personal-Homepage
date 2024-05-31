@@ -8,6 +8,14 @@ Table of Contents
 -   [Docker](#docker)
 -   [Contributors](#contributors)
 
+## Setup
+A `.env` file is required for the supabase connection.
+Under the root directory, create a .env file. This requires 2 values:
+*   SUPABASE_URL
+*   SUPABASE_KEY
+
+Both of the values are found under the project settings in supabase
+
 ## Running
 
 ### Flask Locally
@@ -29,13 +37,18 @@ Working Directory needs to be `Personal-Homepage`
 > docker compose build
 
 #### *Flask*
+Building just the flask app
 > docker compose up -d flaskapp
 
 #### *Next.js*
+Building just the next app
 > docker compose up -d nextapp
 
 #### *Updating*
-If you want new code in your docker image, you need to delete both the container and the image, then run the compose command again to build the new image and container
+Following command will remove both the next and flask images and containers. Then rebuild and start both services
+> docker compose down --rmi all && docker compose up --build
+
+If you want to just update an individualy service, you need to manually remove the respective image and container. Then run the build command.
 
 ## Contributors
 

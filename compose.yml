@@ -23,6 +23,8 @@ services:
       dockerfile: flask.dockerfile
     ports:
       - 4000:4000
+    env_file:
+      - ./.env
     environment:
-      - SUPABASE_URL=""
-      - SUPABASE_KEY=""
+      - SUPABASE_URL=${SUPABASE_URL}
+      - SUPABASE_KEY=${SUPABASE_KEY}
