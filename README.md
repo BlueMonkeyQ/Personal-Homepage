@@ -25,14 +25,17 @@ Working Directory needs to be `frontend`
 
 Working Directory needs to be `Personal-Homepage`
 
-*Build*
+#### *Build*
 > docker compose build
 
-*Flask*
+#### *Flask*
 > docker compose up -d flaskapp
 
-*Next.js*
+#### *Next.js*
 > docker compose up -d nextapp
+
+#### *Updating*
+If you want new code in your docker image, you need to delete both the container and the image, then run the compose command again to build the new image and container
 
 ## Contributors
 
