@@ -9,18 +9,20 @@ services:
       dockerfile: next.dockerfile
     ports:
       - 3000:3000
+    env_file:
+      - ./.env
     environment:
-      - NEXT_PUBLIC_API_URL=http://localhost:4000
+      - NEXT_PUBLIC_API_URL=${NEXT_PUBLIC_API_URL}
     depends_on:
-      - flaskapp
+      - fastapp
   
   # Flask Service
-  flaskapp:
-    container_name: flaskapp
-    image: flaskapp:1.0.0
+  fastapp:
+    container_name: fastapp
+    image: fastapp:1.0.0
     build:
       context: ./backend
-      dockerfile: flask.dockerfile
+      dockerfile: fast.dockerfile
     ports:
       - 4000:4000
     env_file:

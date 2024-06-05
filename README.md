@@ -1,5 +1,5 @@
 # Personal Homepage
-Fullstack using Flask and Next.js
+Fullstack using Fast-Api and Next.js
 
 Table of Contents
 -   [Running](#running)
@@ -36,9 +36,9 @@ Working Directory needs to be `Personal-Homepage`
 #### *Build*
 > docker compose build
 
-#### *Flask*
+#### *Fast*
 Building just the flask app
-> docker compose up -d flaskapp
+> docker compose up -d fastapp
 
 #### *Next.js*
 Building just the next app
