@@ -18,10 +18,11 @@ Both of the values are found under the project settings in supabase
 
 ## Running
 
-### Flask Locally
+### Fastapi Locally
 Working Directory needs to be `backend`
 
-> flask --app run --debug run --host=0.0.0.0 --port=4000
+> uvicorn run:app --host 0.0.0.0 --port 4000
+> uvicorn run:app --host 0.0.0.0 --port 4000 --reload
 
 ### Next.js Locally
 Working Directory needs to be `frontend`

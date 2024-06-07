@@ -6,7 +6,7 @@ from models.users import User
 
 router = APIRouter(
     prefix="/users",
-    tags=["users"],
+    tags=["Users"],
     responses={404: {"message": "Not Found"}}
 )
 
@@ -74,12 +74,12 @@ def create_user(user: User):
 def update_user(id: int, user_in: User):
     try:
         user = supabase.from_("users")\
-        .select("*")\
+        .select("id")\
         .eq(column="id", value=id)\
         .limit(size=1)\
         .execute().data
 
-        if user:
+        if len(user) != 0:
             supabase.from_("users")\
             .update({
                 "username": user_in.username.lower(),
@@ -96,19 +96,19 @@ def update_user(id: int, user_in: User):
             return HTTPException(status_code=404, detail=f"Unable to Find User with id: {id}")
 
     except Exception as e:
-        return HTTPException(status_code=500, detail=f"Unable to UPDATE user, error: {str(e)}")
+        return HTTPException(status_code=500, detail=f"Unable to UPDATE User, error: {str(e)}")
     
 # ---------- DELETE ----------
 @router.delete("/{id}")
 def delete_user(id: int):
     try:
         user = supabase.from_("users")\
-        .select("*")\
+        .select("id")\
         .eq(column="id", value=id)\
         .limit(size=1)\
         .execute().data
 
-        if user:
+        if len(user) != 0:
             supabase.from_("users")\
             .delete()\
             .eq(column='id', value=id)\
@@ -120,4 +120,4 @@ def delete_user(id: int):
             return HTTPException(status_code=404, detail=f"Unable to Find User with id: {id}")
 
     except Exception as e:
-        return HTTPException(status_code=500, detail=f"Unable to DELETE user, error: {str(e)}")
+        return HTTPException(status_code=500, detail=f"Unable to DELETE User, error: {str(e)}")

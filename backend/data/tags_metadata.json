@@ -1,0 +1,6 @@
+[
+    {
+        "name": "Fitness",
+        "description": "Handles all interactions with tables: Workouts, Sets, Exercises"
+    }
+]
