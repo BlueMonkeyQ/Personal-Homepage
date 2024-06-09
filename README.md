@@ -10,7 +10,8 @@ Table of Contents
 
 ## Setup
 A `.env` file is required for the supabase connection.
-Under the root directory, create a .env file. This requires 2 values:
+Under the root directory, create a .env file. This requires 3 values:
+*   NEXT_PUBLIC_API_URL
 *   SUPABASE_URL
 *   SUPABASE_KEY
 

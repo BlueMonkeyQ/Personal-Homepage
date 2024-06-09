@@ -1,19 +1,16 @@
 import pandas as pd
-from typing import Any
 from fastapi import APIRouter, HTTPException
 from fastapi.responses import JSONResponse
 from database import supabase
-from datetime import datetime
-from models.fitness import Exercise, Sets, Workouts
+from models.fitness import Sets, Workouts
 
 router = APIRouter(
     prefix="/fitness",
-    tags=["Fitness"],
     responses={404: {"message": "Not Found"}}
 )
 
 # ---------- GET ----------
-@router.get("/workouts", tags=['Fitness'])
+@router.get("/workouts", tags=['Workouts'])
 def get_workouts(uid: int, date: str):
     try:
         workouts = supabase.from_("workouts")\
@@ -28,7 +25,7 @@ def get_workouts(uid: int, date: str):
         return HTTPException(status_code=500, detail=f"Unable to GET workouts, error: {str(e)}")
     
 
-@router.get("/workouts/{id}", tags=['Fitness'])
+@router.get("/workouts/{id}", tags=['Workouts'])
 def get_workout(id: int):
     try:
         workout = supabase.from_("workouts")\
@@ -42,7 +39,7 @@ def get_workout(id: int):
         return HTTPException(status_code=500, detail=f"Unable to GET workout, error: {str(e)}")
     
 
-@router.get("/sets/{id}", tags=['Fitness'])
+@router.get("/sets/{id}", tags=['Sets'])
 def get_set(id: int):
     try:
         _set = supabase.from_("sets")\
@@ -55,7 +52,7 @@ def get_set(id: int):
     except Exception as e:
         return HTTPException(status_code=500, detail=f"Unable to GET set, error: {str(e)}")
 
-@router.get("/exercises/names", tags=['Fitness'])
+@router.get("/exercises/names", tags=['Exercises'])
 def get_exercises_names():
     try:
         exercises = supabase.from_("exercises")\
@@ -67,7 +64,7 @@ def get_exercises_names():
     except Exception as e:
         return HTTPException(status_code=500, detail=f"Unable to GET exercises, error: {str(e)}")
 
-@router.get("/exercises/{id}", tags=['Fitness'])
+@router.get("/exercises/{id}", tags=['Exercises'])
 def get_exercise(id: int):
     try:
         exercise = supabase.from_("exercises")\
@@ -83,7 +80,7 @@ def get_exercise(id: int):
 
 # ---------- POST ----------
 # @TODO: standardize date
-@router.post("/workouts", tags=['Fitness'])
+@router.post("/workouts", tags=['Workouts'])
 def add_workout_set(workout: Workouts):
     try:
         # Insert Set and return the sid
@@ -122,7 +119,7 @@ def add_workout_set(workout: Workouts):
     except Exception as e:
         return HTTPException(status_code=500, detail=f"Unable to POST workout, error: {str(e)}")
     
-@router.post("/exercises/generate", tags=['Fitness'])
+@router.post("/exercises/generate", tags=['Exercises'])
 def generate_exercise():
     try:
         df = pd.read_csv(r"data/exercises.csv")
@@ -161,7 +158,7 @@ def generate_exercise():
 
 
 # ---------- PUT ----------
-@router.put("/sets/{id}", tags=['Fitness'])
+@router.put("/sets/{id}", tags=['Sets'])
 def update_set(id: int, set_in: Sets):
     try:
         _set = supabase.from_("sets")\
@@ -187,7 +184,7 @@ def update_set(id: int, set_in: Sets):
         return HTTPException(status_code=500, detail=f"Unable to UPDATE set, error: {str(e)}")
 
 # ---------- DELETE ----------
-@router.put("/sets/{id}", tags=['Fitness'])
+@router.put("/sets/{id}", tags=['Sets'])
 def delete_set(id: int):
     try:
         _set = supabase.from_("sets")\

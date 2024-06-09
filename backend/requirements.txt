@@ -3,3 +3,5 @@ supabase
 pydantic
 uvicorn
 pandas
+httpx
+pytest

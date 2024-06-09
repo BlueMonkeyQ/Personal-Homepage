@@ -6,14 +6,12 @@ from models.users import User
 
 router = APIRouter(
     prefix="/users",
-    tags=["Users"],
     responses={404: {"message": "Not Found"}}
 )
 
 # ---------- GET ----------
-
 # Gets all users
-@router.get("")
+@router.get("", tags=["Users"])
 def get_users() -> Any:
     try:
         users = supabase.from_("users")\
@@ -27,7 +25,7 @@ def get_users() -> Any:
         return HTTPException(status_code=500, detail=f"Unable to GET user, error: {str(e)}")
 
 # Gets user via id
-@router.get("/{id}")
+@router.get("/{id}", tags=["Users"])
 def get_user(id):
     try:
         user = supabase.from_("users")\
@@ -46,7 +44,7 @@ def get_user(id):
 
 
 # ---------- POST ----------
-@router.post("")
+@router.post("", tags=["Users"])
 def create_user(user: User):
     try:
         supabase.from_("users")\
@@ -70,7 +68,7 @@ def create_user(user: User):
         return HTTPException(status_code=500, detail=f"Unable to POST user, error: {str(e)}")
 
 # ---------- PUT ----------
-@router.put("/{id}")
+@router.put("/{id}", tags=["Users"])
 def update_user(id: int, user_in: User):
     try:
         user = supabase.from_("users")\
@@ -99,7 +97,7 @@ def update_user(id: int, user_in: User):
         return HTTPException(status_code=500, detail=f"Unable to UPDATE User, error: {str(e)}")
     
 # ---------- DELETE ----------
-@router.delete("/{id}")
+@router.delete("/{id}", tags=["Users"])
 def delete_user(id: int):
     try:
         user = supabase.from_("users")\
