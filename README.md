@@ -2,11 +2,18 @@
 Fullstack using Fast-Api and Next.js
 
 Table of Contents
--   [Running](#running)
-    -   [Flask Locally](#flask-locally)
-    -   [Next.js Locally](#nextjs-locally)
--   [Docker](#docker)
--   [Contributors](#contributors)
+- [Personal Homepage](#personal-homepage)
+  - [Setup](#setup)
+  - [Local Backend Development](#local-backend-development)
+  - [Running](#running)
+    - [Flask Locally](#flask-locally)
+    - [Next.js Locally](#nextjs-locally)
+  - [Docker](#docker)
+      - [*Build*](#build)
+      - [*Fast*](#fast)
+      - [*Next.js*](#nextjs)
+      - [*Updating*](#updating)
+  - [Contributors](#contributors)
 
 ## Setup
 A `.env` file is required for the supabase connection.
@@ -16,6 +23,19 @@ Under the root directory, create a .env file. This requires 3 values:
 *   SUPABASE_KEY
 
 Both of the values are found under the project settings in supabase
+
+## Local Backend Development
+It is strongly recommended to use a conda/mamba/micromamba environment in order to facilitate local development.
+
+A development conda environment can be installed on to your local machine with the following command:
+```bash
+conda env create -f ./backend/conda.yml
+```
+
+If a change to the backend dependencies are made by adding, removing, or upgrading packages, the definition for the development environment and the backend dependencies can be updated with the following command. NOTE: This command should be run within the conda environment that you made the changes to and from within the `./backend` directory.
+```bash
+conda env export --no-builds > dev_env.yml && pip list --format=freeze >> requirements.txt
+```
 
 ## Running
 
