@@ -1,8 +1,8 @@
+import PageContainer from "@/components/custom/PageContainer";
 
 
 export default function Home() {
   return (
-    <main className="p-10">
-    </main>
+      <h3>homepage</h3>
   );
 }

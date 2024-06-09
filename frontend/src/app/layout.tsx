@@ -4,6 +4,7 @@ import './globals.css';
 import { cn } from "@/lib/utils"
 import { ThemeProvider } from "@/components/theme-provider"
 import Navbar from "@/components/custom/Navbar";
+import PageContainer from "@/components/custom/PageContainer";
 
  
 const fontSans = FontSans({
@@ -29,6 +30,7 @@ export default function RootLayout({
           fontSans.variable
         )}
       >
+        <PageContainer>
         <ThemeProvider
             attribute="class"
             defaultTheme="system"
@@ -38,6 +40,7 @@ export default function RootLayout({
       <Navbar />
             {children}
           </ThemeProvider>
+          </PageContainer>
       </body>
     </html>
   );
