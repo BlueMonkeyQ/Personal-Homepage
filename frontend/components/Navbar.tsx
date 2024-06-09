@@ -2,7 +2,7 @@ import Link from "next/link";
 
 export default function Navbar(){
     return(
-        <main>
+        <header>
             <div>
                 <h1>Welcome User</h1>
                 <nav>
@@ -22,6 +22,6 @@ export default function Navbar(){
                     </ul>
                 </nav>
             </div>
-        </main>
+        </header>
     )
 }
