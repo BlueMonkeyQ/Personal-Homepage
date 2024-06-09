@@ -3,6 +3,7 @@
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
 import { z } from "zod"
+import { useToast } from "@/components/ui/use-toast"
 
 import { Button } from "@/components/ui/button"
 import {
@@ -15,28 +16,24 @@ import {
     FormMessage,
 } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
-import { addWorkout } from "@/api-methods"
+import { addWorkout } from "@/lib/api-methods"
 import { DateInput } from "./dateInput"
 import React, { useEffect } from "react"
 import { TimeSelector } from "./timeSelector"
 
 const formSchema = z.object({
-    reps: z.string({
-        required_error: "Reps are required",
-    }).refine(value => /^\d+$/.test(value), {
-        message: "Reps must be a number.",
-    }),
-    weight: z.string({
-        required_error: "Weight is required",
-    }).refine(value => /^\d+$/.test(value), {
-        message: "Weight must be a number.",
+    workoutName: z.string().min(5, {
+        message: "Workout name must be at least 5 characters.",
     }),
     date: z.string({
         required_error: "Date is required.",
     }),
     startTime: z.string({
         required_error: "Start time is required."
-    })
+    }),
+    duration: z.string().min(1, {
+        message: "Duration must be at least 1 character.",
+    }),
 });
 
 export function FormAddWorkout() {
@@ -46,10 +43,10 @@ export function FormAddWorkout() {
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
         defaultValues: {
-            reps: '',
-            weight: '',
+            workoutName: '',
             date: undefined,
-            startTime: undefined
+            startTime: undefined,
+            duration: ''
         },
     })
 
@@ -59,7 +56,7 @@ export function FormAddWorkout() {
             form.setValue("date", date.toDateString())
             form.clearErrors("date")
         }
-    }, [date])
+    }, [date, form])
 
     useEffect(() => {
         if (startTime) {
@@ -67,25 +64,40 @@ export function FormAddWorkout() {
             form.setValue("startTime", startTime)
             form.clearErrors("startTime")
         }
-    }, [startTime])
+    }, [startTime, form])
+
+    const { toast } = useToast()
 
     async function onSubmit(values: z.infer<typeof formSchema>) {
         const combinedDateTime = combineDateTime(values.date, values.startTime);
         values.date = combinedDateTime;
-        const { startTime, ...newValues } = values;
-        console.log(newValues)
-        // TODO: Integrate with BE when ready
-        //const res = await addWorkout(values)
-    }
+      
+        try {
+          const res = await addWorkout(values);
+          if (res) {
+            toast({
+              variant: "default",
+              title: "Created.",
+              description: "Your Workout was created successfully.",
+            });
+          }
+        } catch (err: any) {
+            toast({
+              variant: "destructive",
+              title: "Validation Error",
+              description: err.message,
+            });
+        }
+      }
 
     function combineDateTime(dateString: string, startTime: string): string {
         const date = new Date(dateString);
-      
+
         const [hours, minutes] = startTime.split(':').map(Number);
-      
+
         date.setHours(hours);
         date.setMinutes(minutes);
-      
+
         return date.toISOString();
     }
 
@@ -96,31 +108,17 @@ export function FormAddWorkout() {
                 <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
                     <FormField
                         control={form.control}
-                        name="reps"
+                        name="workoutName"
                         render={({ field }) => (
                             <FormItem>
-                                <FormLabel>Reps</FormLabel>
+                                <FormLabel>Workout Name</FormLabel>
                                 <FormControl>
-                                    <Input placeholder="0" {...field} />
+                                    <Input placeholder="Hunkfest 29" {...field} />
+
                                 </FormControl>
+
                                 <FormDescription>
-                                    This is your amount of repitions.
-                                </FormDescription>
-                                <FormMessage />
-                            </FormItem>
-                        )}
-                    />
-                    <FormField
-                        control={form.control}
-                        name="weight"
-                        render={({ field }) => (
-                            <FormItem>
-                                <FormLabel>Weight</FormLabel>
-                                <FormControl>
-                                    <Input placeholder="0" {...field} />
-                                </FormControl>
-                                <FormDescription>
-                                    This is your max weight in lbs.
+                                    This is the name of your workout.
                                 </FormDescription>
                                 <FormMessage />
                             </FormItem>
@@ -133,10 +131,10 @@ export function FormAddWorkout() {
                             <FormItem>
                                 <FormLabel>Date</FormLabel>
                                 <FormControl>
-                                <DateInput date={date} setDate={setDate}/>
-                                    
+                                    <DateInput date={date} setDate={setDate} />
+
                                 </FormControl>
-                                
+
                                 <FormDescription>
                                     This is when you did the workout.
                                 </FormDescription>
@@ -151,11 +149,28 @@ export function FormAddWorkout() {
                             <FormItem>
                                 <FormLabel>Start Time</FormLabel>
                                 <FormControl>
-                                <TimeSelector setStartTime={setStartTime} />
+                                    <TimeSelector setStartTime={setStartTime} />
                                 </FormControl>
-                                
+
                                 <FormDescription>
                                     This is when you started the workout.
+                                </FormDescription>
+                                <FormMessage />
+                            </FormItem>
+                        )}
+                    />
+                    <FormField
+                        control={form.control}
+                        name="duration"
+                        render={({ field }) => (
+                            <FormItem>
+                                <FormLabel>Duration</FormLabel>
+                                <FormControl>
+                                    <Input placeholder="1" {...field} />
+                                </FormControl>
+
+                                <FormDescription>
+                                    This is how long your workout lasted in hours.
                                 </FormDescription>
                                 <FormMessage />
                             </FormItem>
