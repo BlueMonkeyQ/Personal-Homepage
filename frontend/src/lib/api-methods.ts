@@ -1,3 +1,4 @@
+// Get
 export async function getWorkouts(uid: string, date: string) {
     const res = await fetch(`http://localhost:4000/fitness/workouts?uid=${uid}&date=${date}`, {
         mode: "cors"
@@ -10,7 +11,7 @@ export async function getWorkouts(uid: string, date: string) {
 
     return res.json()
 }
-
+// Post
 export async function addWorkout(formData: { workoutName: string, date: string, duration: string }) {
     const { workoutName, date, duration } = formData;
 
@@ -37,3 +38,22 @@ export async function addWorkout(formData: { workoutName: string, date: string, 
     return res.json();
 }
 
+// Delete
+export async function deleteWorkout(wid: string) {
+    const res = await fetch(`http://localhost:4000/fitness/workouts/${wid}`, {
+        method: 'DELETE',
+        mode: 'cors',
+        headers: {
+            'Accept': 'application/json',
+        }
+    });
+
+    if (!res.ok) {
+        const errorDetail = await res.json();
+        throw new Error(`Failed to fetch data: ${errorDetail.message}`);
+    }
+
+    return res.json();
+}
+
+// Patch

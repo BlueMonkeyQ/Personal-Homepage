@@ -2,19 +2,33 @@
 import {
     Table,
     TableBody,
-    TableCaption,
     TableCell,
-    TableFooter,
     TableHead,
     TableHeader,
     TableRow,
 } from "@/components/ui/table"
-import { getWorkouts } from "@/lib/api-methods";
+import {
+    Dialog,
+    DialogClose,
+    DialogContent,
+    DialogDescription,
+    DialogFooter,
+    DialogHeader,
+    DialogTitle,
+    DialogTrigger,
+} from "@/components/ui/dialog"
+import { Label } from "../ui/label";
+import { getWorkouts, deleteWorkout } from "@/lib/api-methods";
 import { useEffect, useState } from "react";
+import { Button } from "../ui/button";
+import { useToast } from "../ui/use-toast";
+import { Copy } from "lucide-react";
+import { Input } from "../ui/input";
 
 
 export function WorkoutList() {
     const [data, setData] = useState([]);
+    const { toast } = useToast()
 
     useEffect(() => {
         async function fetchData() {
@@ -23,9 +37,31 @@ export function WorkoutList() {
         }
         fetchData();
     }, []);
+
+    const handleDelete = async (id: string) => {
+
+        try {
+            const res = await deleteWorkout(id);
+            if (res) {
+                toast({
+                    variant: "default",
+                    title: "Workout Deleted.",
+                    description: "Your Workout was deleted successfully.",
+                });
+                setData(data.filter((workout: any) => workout.id !== id));
+            }
+        } catch (err: any) {
+            toast({
+                variant: "destructive",
+                title: "Validation Error",
+                description: err.message,
+            });
+        }
+    };
+
     return (
-        <div className="border rounded-xl">
-            <h3 className="text-lg font-regular p-5 mb-5">A list of your workouts, today at 4AM.</h3>
+        <div className="border rounded-xl my-10">
+            
             <Table>
                 <TableHeader>
                     <TableRow>
@@ -33,6 +69,7 @@ export function WorkoutList() {
                         <TableHead>Name</TableHead>
                         <TableHead>Duration</TableHead>
                         <TableHead>Date</TableHead>
+                        <TableHead>Action</TableHead>
                     </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -42,6 +79,32 @@ export function WorkoutList() {
                             <TableCell className="font-medium">{workout.name}</TableCell>
                             <TableCell>{workout.duration}hr(s)</TableCell>
                             <TableCell>{workout.date}</TableCell>
+                            <TableCell className="flex gap-5">
+
+                                <Dialog>
+                                    <DialogTrigger asChild>
+                                    <Button variant={"destructive"}>Delete</Button>
+                                    </DialogTrigger>
+                                    <DialogContent className="sm:max-w-md">
+                                        <DialogHeader>
+                                            <DialogTitle>Are you sure you want to delete this workout?</DialogTitle>
+                                            <DialogDescription>
+                                                You will not be able to restore this.
+                                            </DialogDescription>
+                                        </DialogHeader>
+                                        <DialogFooter className="sm:justify-start">
+                                            <DialogClose asChild>
+                                                <Button onClick={() => handleDelete(workout.id)} type="button" variant={"destructive"}>
+                                                    Delete Forever
+                                                </Button>
+                                            </DialogClose>
+                                        </DialogFooter>
+                                    </DialogContent>
+                                </Dialog>
+
+                                <Button variant={"default"}>Edit</Button>
+
+                            </TableCell>
                         </TableRow>
                     ))}
                 </TableBody>
