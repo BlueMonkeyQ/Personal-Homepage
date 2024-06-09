@@ -6,7 +6,7 @@ import { ThemeProvider } from "@/components/theme-provider"
 import Navbar from "@/components/custom/Navbar";
 import PageContainer from "@/components/custom/PageContainer";
 
- 
+
 const fontSans = FontSans({
   subsets: ["latin"],
   variable: "--font-sans",
@@ -30,18 +30,18 @@ export default function RootLayout({
           fontSans.variable
         )}
       >
-        <PageContainer>
         <ThemeProvider
-            attribute="class"
-            defaultTheme="system"
-            enableSystem
-            disableTransitionOnChange
-          >
-      <Navbar />
+          attribute="class"
+          defaultTheme="system"
+          enableSystem
+          disableTransitionOnChange
+        >
+          <Navbar />
+          <PageContainer>
             {children}
-          </ThemeProvider>
           </PageContainer>
+        </ThemeProvider>
       </body>
-    </html>
+    </html >
   );
 }
