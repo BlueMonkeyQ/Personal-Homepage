@@ -1,0 +1,18 @@
+[   
+    {
+        "name": "Users",
+        "description": "Handles all interactions with tables: Users"
+    },
+    {
+        "name": "Workouts",
+        "description": "Handles all interactions with tables: Workouts"
+    },
+    {
+        "name": "Exercises",
+        "description": "Handles all interactions with tables: Exercises"
+    },
+    {
+        "name": "Sets",
+        "description": "Handles all interactions with tables: Sets"
+    }
+]
