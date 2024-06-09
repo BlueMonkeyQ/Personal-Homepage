@@ -1,0 +1,46 @@
+Table supported_exercises {
+  id integer [primary key]
+  name varchar (250) unique
+  equipment varchar (250)
+  region varchar (250)
+  primary_group varchar (250)
+  secondary_group varchar (250)
+  tertiary_group varchar (250)
+  force varchar (250)
+  mechanics varchar (250)
+  laterality varchar (250)
+  difficulty varchar (250)
+}
+
+Table workouts {
+  id integer [primary key]
+  uid int
+  date timestamp
+  duration int
+  workout_name varchar
+}
+
+Ref: exercises.eid > supported_exercises.id
+Ref: exercises.sid > sets.id
+Ref: exercises.wid > workouts.id
+
+Table exercises {
+  id integer [primary key]
+  wid integer
+  eid integer
+  sid integer
+}
+
+Table sets {
+  id integer [primary key]
+  reps int
+  weight float
+}
+
+
+Table split {
+  id integer [primary key]
+  name varchar
+  uid int
+  eids array
+}
