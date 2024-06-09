@@ -33,7 +33,7 @@ conda env create -f ./backend/conda.yml
 
 If a change to the backend dependencies are made by adding, removing, or upgrading packages, the definition for the development environment and the backend dependencies can be updated with the following command. NOTE: This command should be run within the conda environment that you made the changes to and from within the `./backend` directory.
 ```bash
-conda env export --no-builds > dev_env.yml && pip list --format=freeze >> requirements.txt
+conda env export --no-builds > dev_env.yml && echo "" > requirements.txt && pip list --format=freeze >> requirements.txt
 ```
 
 ## Running
