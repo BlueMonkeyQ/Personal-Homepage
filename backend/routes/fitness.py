@@ -11,11 +11,13 @@ router = APIRouter(
 )
 
 # ---------- SUPPORTED EXERCISES ----------
-@router.get("/support_exercises/names", tags=['Support Exercises'])
-def get_exercises_names():
+@router.get("/support_exercises/name/{name}", tags=['Support Exercises'])
+def get_exercises_names(name: str):
     try:
-        exercises = supabase.from_("support_exercises")\
-        .select("id, name")\
+        exercises= supabase.from_("support_exercises")\
+        .select("*")\
+        .limit(size=10)\
+        .text_search('name', name)\
         .execute().data
 
         return JSONResponse(status_code=200, content=exercises)
@@ -74,7 +76,7 @@ def generate_exercise():
         return HTTPException(status_code=500, detail=f"Unable to POST exercise, error: {str(e)}")
 
 # ---------- EXERCISES ----------
-@router.get("/exercises", tags=['Exercises'])
+@router.get("/exercises/{wid}", tags=['Exercises'])
 def get_exercises(wid: int):
     try:
 
@@ -88,24 +90,24 @@ def get_exercises(wid: int):
     except Exception as e:
         return HTTPException(status_code=500, detail=f"Unable to GET exercises, error: {str(e)}")
 
-@router.get("/exercises/{id}", tags=['Exercises'])
+@router.get("/exercise/{id}", tags=['Exercises'])
 def get_exercise(id: int):
     try:
 
-        exercises = supabase.from_("exercises")\
+        exercise = supabase.from_("exercises")\
         .select("*")\
         .eq(column="id", value=id)\
-        .execute().data
+        .execute().data[0]
         
-        return JSONResponse(status_code=200, content=exercises)
+        return JSONResponse(status_code=200, content=exercise)
 
     except Exception as e:
-        return HTTPException(status_code=500, detail=f"Unable to GET exercises, error: {str(e)}")
+        return HTTPException(status_code=500, detail=f"Unable to GET exercise, error: {str(e)}")
     
-@router.post("/exercises", tags=['Exercises'])
+@router.post("/exercise", tags=['Exercises'])
 def add_exercises(exercise: Exercises):
+    # Insert Set and return the sid
     try:
-        # Insert Set and return the sid
         supabase.from_("sets")\
         .insert({
             "reps": exercise.reps,
@@ -133,7 +135,15 @@ def add_exercises(exercise: Exercises):
         })\
         .execute()
 
+        id = supabase.from_("exercises")\
+        .select("id")\
+        .eq(column="wid", value=exercise.wid)\
+        .order(column="id", desc=True)\
+        .limit(size=1)\
+        .execute().data[0]["id"]
+
         return JSONResponse(status_code=201, content={
+            "id": id,
             "wid": exercise.wid,
             "eid": exercise.eid,
             "sid": exercise.sid
@@ -141,6 +151,79 @@ def add_exercises(exercise: Exercises):
 
     except Exception as e:
         return HTTPException(status_code=422, detail=f"Unable to POST exercise, error: {str(e)}")    
+
+@router.put('/exercise/{id}', tags=['Exercises'])
+def update_exercise(id: int, exercise: Exercises):
+    # Validate Exercise exists
+    try:
+        _exercise = supabase.from_("exercises")\
+        .select("*")\
+        .eq(column="id", value=id)\
+        .limit(size=1)\
+        .execute().data
+
+        if len(_exercise) == 0:
+            return HTTPException(status_code=404, detail=f"Unable to Find exercise with id: {id}")
+
+    except Exception as e:
+        return HTTPException(status_code=500, detail=f"Unable to GET exercise, error: {str(e)}")
+    
+    # Update Exercise
+    try:
+        supabase.from_("exercises")\
+        .update({
+            "wid": exercise.wid,
+            "eid": exercise.eid,
+        })\
+        .eq(column="id", value=id)\
+        .execute()
+
+        return JSONResponse(status_code=200, content={'message':True})
+    
+    except Exception as e:
+        return HTTPException(status_code=500, detail=f"Unable to UPDATE exercise, error: {str(e)}")
+
+
+@router.delete('/exercise/{id}', tags=['Exercises'])
+def delete_exercise(id: int):
+
+    # Validate Exercise exists
+    try:
+        _exercise = supabase.from_("exercises")\
+        .select("*")\
+        .eq(column="id", value=id)\
+        .limit(size=1)\
+        .execute().data
+
+        if len(_exercise) == 0:
+            return HTTPException(status_code=404, detail=f"Unable to Find exercise with id: {id}")
+
+    except Exception as e:
+        return HTTPException(status_code=500, detail=f"Unable to GET exercise, error: {str(e)}")
+
+    # Delete the Associated Set
+    try:
+        # Delete the set
+        supabase.from_("sets")\
+        .delete()\
+        .eq(column="id", value=_exercise[0]['sid'])\
+        .execute()
+
+    except Exception as e:
+        return HTTPException(status_code=500, detail=f"Unable to DELETE set, error: {str(e)}")
+
+    # Delete the Exercise
+    try:
+        # Delete the set
+        supabase.from_("exercises")\
+        .delete()\
+        .eq(column="id", value=id)\
+        .execute()
+
+        return JSONResponse(status_code=200, content={'message':True})
+
+    except Exception as e:
+        return HTTPException(status_code=500, detail=f"Unable to DELETE exercise, error: {str(e)}")
 
 # ---------- SETS ----------
 @router.get("/sets/{id}", tags=['Sets'])
@@ -189,30 +272,37 @@ def delete_set(id: int):
         .eq(column="id", value=id)\
         .execute().data
 
-        if len(_set) != 0:
-            # Delete the set
-            supabase.from_("sets")\
-            .delete()\
-            .eq(column="id", value=id)\
-            .execute()
-
-            # Delete the workout with that sid
-            supabase.from_("workouts")\
-            .delete()\
-            .eq(column="sid", value=id)\
-            .execute()
-
-            return JSONResponse(status_code=200, content={'message':True})
-
-        else:
+        if len(_set) == 0:
             return HTTPException(status_code=404, detail=f"Unable to Find set with id: {id}")
 
     except Exception as e:
         return HTTPException(status_code=500, detail=f"Unable to DELETE set, error: {str(e)}")
     
+    try:
+        # Delete the set
+        supabase.from_("sets")\
+        .delete()\
+        .eq(column="id", value=id)\
+        .execute()
+
+    except Exception as e:
+        return HTTPException(status_code=500, detail=f"Unable to DELETE set, error: {str(e)}")
+    
+    try:
+        # Delete the exericise with that sid
+        supabase.from_("exercises")\
+        .delete()\
+        .eq(column="sid", value=id)\
+        .execute()
+
+        return JSONResponse(status_code=200, content={'message':True})
+
+    except Exception as e:
+        return HTTPException(status_code=500, detail=f"Unable to DELETE exercise, error: {str(e)}")
+    
 # ---------- WORKOUTS ----------
 @router.get("/workouts", tags=['Workouts'])
-def get_workouts(uid: int, date: str, name: str):
+def get_workouts(uid: int, date: str):
 
     # Validate Date
     try:
@@ -240,7 +330,6 @@ def get_workouts(uid: int, date: str, name: str):
         .select("*")\
         .eq(column="uid", value=uid)\
         .eq(column="date", value=date)\
-        .eq(column="name", value=name)\
         .execute().data
         
         return JSONResponse(status_code=200, content=workouts)
