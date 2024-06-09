@@ -1,8 +1,9 @@
 import PageContainer from "@/components/custom/PageContainer";
 
-
-export default function Home() {
+export default function Finance() {
   return (
-      <h3>homepage</h3>
+
+      <h2>Hello finance</h2>
+
   );
 }

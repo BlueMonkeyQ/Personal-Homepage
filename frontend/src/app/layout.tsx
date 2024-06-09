@@ -3,7 +3,10 @@ import { Inter as FontSans } from "next/font/google";
 import './globals.css';
 import { cn } from "@/lib/utils"
 import { ThemeProvider } from "@/components/theme-provider"
- 
+import Navbar from "@/components/custom/Navbar";
+import PageContainer from "@/components/custom/PageContainer";
+
+
 const fontSans = FontSans({
   subsets: ["latin"],
   variable: "--font-sans",
@@ -28,14 +31,17 @@ export default function RootLayout({
         )}
       >
         <ThemeProvider
-            attribute="class"
-            defaultTheme="system"
-            enableSystem
-            disableTransitionOnChange
-          >
+          attribute="class"
+          defaultTheme="system"
+          enableSystem
+          disableTransitionOnChange
+        >
+          <Navbar />
+          <PageContainer>
             {children}
-          </ThemeProvider>
+          </PageContainer>
+        </ThemeProvider>
       </body>
-    </html>
+    </html >
   );
 }
