@@ -6,14 +6,12 @@ from models.users import User
 
 router = APIRouter(
     prefix="/users",
-    tags=["users"],
     responses={404: {"message": "Not Found"}}
 )
 
 # ---------- GET ----------
-
 # Gets all users
-@router.get("")
+@router.get("", tags=["Users"])
 def get_users() -> Any:
     try:
         users = supabase.from_("users")\
@@ -27,7 +25,7 @@ def get_users() -> Any:
         return HTTPException(status_code=500, detail=f"Unable to GET user, error: {str(e)}")
 
 # Gets user via id
-@router.get("/{id}")
+@router.get("/{id}", tags=["Users"])
 def get_user(id):
     try:
         user = supabase.from_("users")\
@@ -46,7 +44,7 @@ def get_user(id):
 
 
 # ---------- POST ----------
-@router.post("")
+@router.post("", tags=["Users"])
 def create_user(user: User):
     try:
         supabase.from_("users")\
@@ -70,16 +68,16 @@ def create_user(user: User):
         return HTTPException(status_code=500, detail=f"Unable to POST user, error: {str(e)}")
 
 # ---------- PUT ----------
-@router.put("/{id}")
+@router.put("/{id}", tags=["Users"])
 def update_user(id: int, user_in: User):
     try:
         user = supabase.from_("users")\
-        .select("*")\
+        .select("id")\
         .eq(column="id", value=id)\
         .limit(size=1)\
         .execute().data
 
-        if user:
+        if len(user) != 0:
             supabase.from_("users")\
             .update({
                 "username": user_in.username.lower(),
@@ -96,19 +94,19 @@ def update_user(id: int, user_in: User):
             return HTTPException(status_code=404, detail=f"Unable to Find User with id: {id}")
 
     except Exception as e:
-        return HTTPException(status_code=500, detail=f"Unable to UPDATE user, error: {str(e)}")
+        return HTTPException(status_code=500, detail=f"Unable to UPDATE User, error: {str(e)}")
     
 # ---------- DELETE ----------
-@router.delete("/{id}")
+@router.delete("/{id}", tags=["Users"])
 def delete_user(id: int):
     try:
         user = supabase.from_("users")\
-        .select("*")\
+        .select("id")\
         .eq(column="id", value=id)\
         .limit(size=1)\
         .execute().data
 
-        if user:
+        if len(user) != 0:
             supabase.from_("users")\
             .delete()\
             .eq(column='id', value=id)\
@@ -120,4 +118,4 @@ def delete_user(id: int):
             return HTTPException(status_code=404, detail=f"Unable to Find User with id: {id}")
 
     except Exception as e:
-        return HTTPException(status_code=500, detail=f"Unable to DELETE user, error: {str(e)}")
+        return HTTPException(status_code=500, detail=f"Unable to DELETE User, error: {str(e)}")
