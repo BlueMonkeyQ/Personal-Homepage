@@ -17,7 +17,8 @@ Table of Contents
 
 ## Setup
 A `.env` file is required for the supabase connection.
-Under the root directory, create a .env file. This requires 2 values:
+Under the root directory, create a .env file. This requires 3 values:
+*   NEXT_PUBLIC_API_URL
 *   SUPABASE_URL
 *   SUPABASE_KEY
 
@@ -38,10 +39,11 @@ conda env export --no-builds > dev_env.yml && echo "" > requirements.txt && pip 
 
 ## Running
 
-### Flask Locally
+### Fastapi Locally
 Working Directory needs to be `backend`
 
-> flask --app run --debug run --host=0.0.0.0 --port=4000
+> uvicorn run:app --host 0.0.0.0 --port 4000
+> uvicorn run:app --host 0.0.0.0 --port 4000 --reload
 
 ### Next.js Locally
 Working Directory needs to be `frontend`
