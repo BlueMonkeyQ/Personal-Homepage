@@ -4,3 +4,4 @@ __pycache__
 venv
 *.ipynb
 .pytest_cache
+.vscode

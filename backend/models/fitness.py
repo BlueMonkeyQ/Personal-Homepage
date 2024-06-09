@@ -1,7 +1,6 @@
 from pydantic import BaseModel
-from datetime import datetime
 
-class Exercise(BaseModel):
+class Support_Exercises(BaseModel):
     name: str
     equipment: str
     region: str = None
@@ -13,14 +12,19 @@ class Exercise(BaseModel):
     laterality: str = None
     difficulty: str = None
 
+class Exercises(BaseModel):
+    wid: int
+    eid: int 
+    sid: int 
+    reps: int
+    weight: float
+
 class Sets(BaseModel):
     reps: int
     weight: float
 
 class Workouts(BaseModel):
     uid: int
-    eid: int
-    sid: int = None
-    reps: int = None
-    weight: float = None
+    name: str
     date: str
+    duration: int
